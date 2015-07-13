@@ -82,8 +82,6 @@ function config = parse_options(varargin)
   end
   compiler_flags = sprintf(' %s', varargin{~mark_for_delete});
   if isunix
-    compiler_flags = sprintf(' CFLAGS="\\$CFLAGS -fPIC"%s', ...
-                             compiler_flags);
     if ~ismac
       compiler_flags = sprintf(' -lrt %s', compiler_flags);
     end
@@ -108,8 +106,8 @@ function config = download_libbson(root_dir, config)
   end
   config.libbson_path = fullfile(libbson, '.libs', 'libbson-1.0.a');
   if ~exist(config.libbson_path, 'file')
-    cmd = sprintf(['cd %s; ./autogen.sh --enable-static; ' ...
-                   'make CFLAGS="$CFLAGS -fPIC";'], ...
+    cmd = sprintf(['cd %s && sh autogen.sh --enable-static && ' ...
+                   'make'], ...
                   libbson);
     disp(cmd);
     system(cmd);

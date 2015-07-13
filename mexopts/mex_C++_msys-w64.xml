@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config
+    Name="Msys-w64 GCC"
+    ShortName="MsysW64"
+    Manufacturer="Msys"
+    Version=""
+    Language="C++"
+    Priority="B"
+    Location="$MSYSROOT\" >
+    <Details
+        CompilerExecutable="$COMPILER"
+        CompilerDefines="$COMPDEFINES"
+        CompilerFlags="$COMPFLAGS"
+        OptimizationFlags="$OPTIMFLAGS"
+        DebugFlags="$DEBUGFLAGS"
+        IncludeFlags="$INCLUDE"
+        LinkerExecutable="$LINKER"
+        LinkerFlags="$LINKFLAGS"
+        LinkerLibraries="$LINKLIBS"
+        LinkerDebugFlags="$LINKDEBUGFLAGS"
+        LinkerOptimizationFlags="$LINKOPTIMFLAGS"
+        CommandLineShell=""
+		CommandLineShellArg=""
+        CompilerDefineFormatter="-D%s"
+        LinkerLibrarySwitchFormatter="lib%s.lib;%s.lib"
+        LinkerPathFormatter="-L%s"
+		LibrarySearchPath="$$LIB;$$LIBPATH;$$PATH;$$INCLUDE;$MATLABROOT\extern\lib\$ARCH\microsoft"
+    />
+    <!-- GCC compiler and linker options:
+		https://gcc.gnu.org/onlinedocs/gcc/Invoking-GCC.html
+		https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html
+		https://gcc.gnu.org/onlinedocs/gcc/i386-and-x86-64-Windows-Options.html
+		https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html	-->
+	<!-- NOTE about LINKEXPORT: passing export-all-symbols to linker may NOT be necessary -->
+    <vars
+          CMDLINE100="$COMPILER -c $COMPFLAGS $OPTIM $COMPDEFINES $INCLUDE $SRC -o$OBJ"
+          CMDLINE200="$LINKER $LINKFLAGS $LINKTYPE $LINKOPTIM $LINKEXPORT $OBJS $LINKLIBS -o$EXE"
+          CMDLINE250=""
+          CMDLINE300="del $OBJ"
+
+          COMPILER="x86_64-pc-msys-g++"
+          COMPFLAGS="-m64 -mwin32 -mdll -Wall -std=c++11 -Wno-sign-compare "
+          COMPDEFINES=" $MATLABMEX"
+          MATLABMEX=" -DMATLAB_MEX_FILE"
+          OPTIMFLAGS="-DNDEBUG -O3"
+          INCLUDE="-I&quot;$MATLABROOT\extern\include&quot; -I&quot;$MATLABROOT\simulink\include&quot;"
+          DEBUGFLAGS="-g"
+
+          LINKER="x86_64-pc-msys-g++"
+          LINKFLAGS=" "
+          LINKTYPE="-shared "
+          LINKEXPORT="-Wl,--export-all-symbols "
+          LINKLIBS="-L&quot;$MATLABROOT\extern\lib\$ARCH\microsoft&quot; -L&quot;$MATLABROOT\bin\win64&quot; -lmex -lmx -leng -lmat -lmwlapack -lmwblas "
+          LINKDEBUGFLAGS="-g"
+          LINKOPTIMFLAGS="-O3"
+
+          OBJEXT=".obj"
+          LDEXT=".mexw64"
+		  SETENV="set COMPILER=$COMPILER
+				set COMPFLAGS=-c $COMPFLAGS $COMPDEFINES $MATLABMEX
+				set OPTIMFLAGS=$OPTIMFLAGS
+				set DEBUGFLAGS=$DEBUGFLAGS
+				set LINKER=$LINKER
+				set LINKFLAGS=$LINKFLAGS $LINKTYPE $LINKLIBS $LINKEXPORT
+				set LINKDEBUGFLAGS=-g
+				set NAME_OUTPUT=-o &quot;%OUTDIR%%MEX_NAME%%MEX_EXT%&quot;"
+    />
+    <client/>
+	    <locationFinder>
+		<MSYSROOT>
+			<envVarExists name="MSYSROOT" />
+		</MSYSROOT>
+		</locationFinder>
+	<!-- NOTE 1: The following env tag is evaluated right BEFORE compile and AFTER setup
+		 (the search for the compiler). So, you can't hard-code the path below.
+
+		 NOTE 2: This occurs EVERY TIME you run `mex` to build a MEX file.
+
+		 NOTE 3: It is not clear if g++ from the MinGW distributions needs anything
+		 explicitly added to INCLUDE or LIB. The compiler seems to know the relative
+		 paths to its own headers and libraries. For example, g++ with MinGW-w64
+		 knows to look in ..\x86_64-w64-mingw32\include\c++ from it's location for
+		 the C++ Standard Library headers, g++ with TDM-GCC-64 knows to look in
+		 ..\lib\gcc\x86_64-w64-mingw32\4.9.2\include\c++, etc.
+
+		 NOTE 4: LIBPATH is redundant with LIB (see LibrarySearchPath), -->
+    <env
+        PATH="$MSYSROOT\usr\bin"
+        INCLUDE=""
+        LIB="$MATLABROOT\lib\$ARCH"
+        LIBPATH=""
+    />
+</config>

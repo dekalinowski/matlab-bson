@@ -10,6 +10,12 @@
 #include <matrix.h>
 #include <stdbool.h>
 
+#ifdef __cplusplus
+#define EXTERN_C extern "C"
+#else
+#define EXTERN_C
+#endif
+
 /** Convert mxArray* to bson.
  * @param input mxArray to convert to bson.
  * @param flags options to change the behavior.
